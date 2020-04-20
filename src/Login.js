@@ -1,13 +1,15 @@
 
 import { GoogleLogin } from 'react-google-login';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import credentials from './config/credentials.json';
+import logo from "./logo.svg";
 
-
-
-const Login = ({ handleLogin, isSignedIn = false } ) => {
+const Login = ({ handleLogin } ) => {
   
- return isSignedIn ? null :<GoogleLogin
+ return <div className="login">
+ <img src={logo} alt="logo" className="logo" />
+ <h3>Chalk It Out.</h3>
+ <GoogleLogin
     clientId={credentials.web.client_id}
     buttonText="Sign In"
     onSuccess={handleLogin}
@@ -15,6 +17,7 @@ const Login = ({ handleLogin, isSignedIn = false } ) => {
     onFailure={handleLogin}
     cookiePolicy={'single_host_origin'}
   />
+ </div>
 }
 
 export default Login

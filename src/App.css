@@ -1,13 +1,17 @@
-.App {
-    text-align: center;
-    min-height: 60vh;
+
+.login {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    width: 30%;
+    height: 90vh;
     align-items: center;
+    justify-content: center;
     margin: auto;
 }
-
-.Logo {
-    font-weight: 200;
+.logo {
+    margin: 2rem 0;
+    position: relative;
+    left: 1.6rem;
+    width: 120px;
+    height: 120px;
 }

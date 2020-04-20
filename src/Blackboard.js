@@ -27,8 +27,7 @@ function Box(props) {
     )
   }
 
-
-export default Blackboard = () => <Layout>
+const Blackboard = () => <Layout>
 <Canvas>
   <ambientLight />
   <pointLight position={[10, 10, 10]} />
@@ -36,3 +35,5 @@ export default Blackboard = () => <Layout>
   <Box position={[1.2, 0, 0]} />
 </Canvas>
 </Layout>
+
+export default Blackboard;

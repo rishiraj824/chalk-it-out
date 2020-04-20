@@ -6,29 +6,31 @@ body {
   font-weight: 400;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
 
-
-/** Thin */
+/** Light */
 @font-face {
   font-family: "San Francisco";
   font-weight: 200;
-  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-thin-webfont.woff");
-}
-
-/** Regular */
-@font-face {
-  font-family: "San Francisco";
-  font-weight: 400;
-  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-regular-webfont.woff");
+  src: url('./fonts/SF-Pro-Display-Light.otf');
 }
 
 /** Medium */
 @font-face {
   font-family: "San Francisco";
   font-weight: 500;
-  src: url("https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sanfranciscodisplay-medium-webfont.woff");
+  src: url('./fonts/SF-Pro-Display-Medium.otf');
+}
+
+/** Semi Bold */
+@font-face {
+  font-family: "San Francisco";
+  font-weight: 400;
+  src: url('./fonts/SF-Pro-Display-Semibold.otf');
+}
+
+/** Bold */
+@font-face {
+  font-family: "San Francisco";
+  font-weight: 700;
+  src: url('./fonts/SF-Pro-Display-Semibold.otf');
 }

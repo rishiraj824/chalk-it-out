@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import Login from './Login';
-import Nav from './components/nav'
 import './App.css';
 import Blackboard from './Blackboard';
 
@@ -50,9 +49,7 @@ class  App extends Component {
     const { user, isSignedIn } = this.state;
     return (
       <React.Fragment>
-      <div className="App">
-        {isSignedIn?<Login isSignedIn={isSignedIn} handleLogin={this.handleLogin} />:<Blackboard/>
-      </div>
+        {isSignedIn?<Blackboard user={user}/>:<Login isSignedIn={isSignedIn} handleLogin={this.handleLogin} />}
       </React.Fragment>
     );
   }
