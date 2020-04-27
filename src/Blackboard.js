@@ -33,6 +33,7 @@ function Box(props) {b
     )
   }
  */
+const brushSize = 5;
 export default class Blackboard extends Component {
 
     constructor(props){
@@ -66,7 +67,7 @@ export default class Blackboard extends Component {
 
     onBrushSizeSelection = (size) => {
         this.setState({
-            brushSize: Number(size.slice(0, size.length - 1)) * this.state.brushSize,
+            brushSize: Number(size.slice(0, size.length - 1)) * brushSize,
             isPaletteOpen: false,
             selectedOption: ''
         })
@@ -130,7 +131,7 @@ export default class Blackboard extends Component {
     }
     eraser = () => {
         this.onBrushSizeSelection('2x');
-        this.handleChangeBrushColorComplete({ hex: this.state.background })
+        this.handleChangeBrushColorComplete({ hex: this.state.background });
     }
     selectPaletteOption = (option) => this.setState({ selectedOption: option });
     
@@ -149,9 +150,9 @@ export default class Blackboard extends Component {
     }
     handleChangeBackgroundComplete = (color, event) => {
         this.setState({ background: color.hex, selectedOption: '', isPaletteOpen: false });
-        
         // to do: use the sketch library to do this
-        this.fillCanvasBackgroundWithColor(document.getElementsByTagName('canvas')[0],color.hex);
+
+        document.getElementsByTagName('canvas')[0].style.backgroundColor = color.hex;
     };
 
     handleChangeBrushColorComplete = (color, event) => {
@@ -169,13 +170,13 @@ export default class Blackboard extends Component {
     }
     componentDidMount() {
         this.getBlackboard();
-        this.fillCanvasBackgroundWithColor(document.getElementsByTagName('canvas')[0], '#ffffff');
+        document.getElementsByTagName('canvas')[0].style.backgroundColor = this.state.background;
     }
 
     createSheet =()=> {
         const canva = document.getElementsByTagName('canvas')[0];
         const ctx = canva.getContext('2d');
-
+        this.fillCanvasBackgroundWithColor(canva, this.state.background);
         const dataURL = canva.toDataURL('image/jpeg', 0.3);
         const sheets = this.state.sheets;
 
@@ -185,7 +186,8 @@ export default class Blackboard extends Component {
         ctx.fillStyle = "white";
         canva.style.backgroundColor = '#fff';
         this.setState({
-            sheets
+            sheets,
+            background: '#fff',
         })
     }
 
