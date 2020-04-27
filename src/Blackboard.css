@@ -1,0 +1,144 @@
+.right-nav {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    top: 7vh;
+    width: 60px;
+    height: 93vh;
+    overflow: auto;
+    box-shadow: 0 0 5px -1px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    border-top: 0.5px solid #d1d1d1;
+}
+
+.palette, .sheet-nav {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.1);
+    padding: 0.4rem;
+    box-sizing: border-box;
+    cursor: pointer;
+    margin: 1rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.overlay {
+    z-index: 0;
+    background: rgba(0, 0, 0, 0.4);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+}
+.preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    width: 100%;
+    height: 100vh;
+}
+
+.sheet-nav-image {
+    position: absolute;
+    width: inherit;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+
+.modal-preview {
+    height: 100vh;
+    position: absolute;
+    margin: auto;
+    width: 100%;
+    z-index: 4;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.preview-sheet-image {
+    height: auto;
+    position: relative;
+    width: 80%;
+    z-index: 4;
+}
+
+.create-sheet {
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+.palette-options {
+    position: absolute;
+    right: 10%;
+    border-radius: 4px;
+    bottom: 2%;
+    width: 200px;
+    display: flex;
+    justify-content: space-evenly;
+    height: 40px;
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.1);
+    transition: left cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    background: #fff;
+}
+
+.palette-option-image {
+    width: 26px;
+    cursor: pointer;
+
+}
+.option-container {
+    position: absolute;
+    bottom: 130%;
+    right: -5%;
+    background: #fff;
+    box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.1);
+    padding: 0.4rem;
+}
+.option-container::after{
+    border-top: 8px solid #fff;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    content: '';
+    z-index: 1;
+    position: absolute;
+    right: 50%;
+    top: 100%;
+}
+.option-container::before {
+    content: '';
+    right: 50%;
+    border: transparent;
+    position: absolute;
+    transform: rotate(45deg);
+    z-index: -1;
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.2);
+    width: 16px;
+    height: 16px;
+    bottom: -5%;
+}
+.palette-option-image:hover{ 
+    transform: scale(1.1);
+    transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+
+#blackboard {
+    height: 93vh;
+}

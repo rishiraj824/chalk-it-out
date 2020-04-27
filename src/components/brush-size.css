@@ -1,0 +1,28 @@
+.sizes {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 200px;
+    height: 30px;
+    background: #fff;
+}
+.size {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 24px;
+    font-weight: 400;
+    font-family: "San Francisco";
+    color: #212121;
+    font-size: 0.5rem;
+    vertical-align: middle;
+    margin: 0 0.4rem;
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
+
+.size:hover{ 
+    transform: scale(1.1);
+    transition: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}

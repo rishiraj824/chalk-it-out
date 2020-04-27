@@ -1,3 +1,9 @@
+/*
+
+Credits - https://github.com/soulwire/sketch.js/
+
+*/
+
 (function ( root, factory ) {
 
     if ( typeof exports === 'object' ) {
@@ -556,8 +562,13 @@
           }
   
         })();
+
+        // add background
+        ( options.container || doc.body ).style.background = options.background || '#ffffff';
   
         ( options.container || doc.body ).appendChild( element );
+
+        
   
         return Sketch.augment( context, options );
       },
