@@ -39,7 +39,6 @@ class  App extends Component {
           name: response.profileObj && response.profileObj.name
         },
       })
-      window.location.reload();
   }
 
   handleLogout = () => {
