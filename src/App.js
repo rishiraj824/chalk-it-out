@@ -21,26 +21,28 @@ class  App extends Component {
     if(isSignedIn) {
       this.setState({
         isSignedIn,
-        user: JSON.parse(localStorage.getItem('user'))
+        user: JSON.parse(localStorage.getItem('user')) || {
+          avatar: 'https://i.pravatar.cc/50',
+          name: 'Anonymous'
+        }
       })
     }
   }
   handleLogin = (response) => {
     localStorage.setItem('user', JSON.stringify({
-      avatar: response.profileObj.imageUrl,
-      name: response.profileObj.name
+      avatar: response.profileObj && response.profileObj.imageUrl,
+      name: response.profileObj && response.profileObj.name
     }))
       this.setState({
         user: {
-          avatar: response.profileObj.imageUrl,
-          name: response.profileObj.name
+          avatar: response.profileObj && response.profileObj.imageUrl,
+          name: response.profileObj && response.profileObj.name
         },
       })
       window.location.reload();
   }
 
   handleLogout = () => {
-    console.log('hola')
     localStorage.removeItem('user');
     window.location.reload();
   }

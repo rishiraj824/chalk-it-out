@@ -168,7 +168,8 @@ export default class Blackboard extends Component {
         })
     }
     componentDidMount() {
-        this.getBlackboard()
+        this.getBlackboard();
+        this.fillCanvasBackgroundWithColor(document.getElementsByTagName('canvas')[0], '#ffffff');
     }
 
     createSheet =()=> {
