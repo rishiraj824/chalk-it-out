@@ -175,7 +175,7 @@ export default class Blackboard extends Component {
         const canva = document.getElementsByTagName('canvas')[0];
         const ctx = canva.getContext('2d');
 
-        const dataURL = canva.toDataURL('image/jpeg', 0.1);
+        const dataURL = canva.toDataURL('image/jpeg', 0.3);
         const sheets = this.state.sheets;
 
         sheets.push(dataURL);
@@ -244,7 +244,7 @@ export default class Blackboard extends Component {
         return (<Layout>
            {/*} <Canvas id="blackboard">
             </Canvas>*/}
-        <div id="blackboard"></div>
+        <div id="blackboard" className="blackboard"></div>
         <div className="right-nav">
             <SheetNav />
             <PaletteComponent />

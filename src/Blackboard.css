@@ -139,6 +139,8 @@
 }
 
 
-#blackboard {
+.blackboard {
     height: 93vh;
+    overflow: hidden;
+
 }
