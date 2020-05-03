@@ -1,39 +1,19 @@
 import React, { useRef, useState, Component } from 'react';
 import Layout from './Layout';
-import { Canvas, useFrame } from 'react-three-fiber'
 import Sketch from './lib/index';
 import './Blackboard.css';
 import { CirclePicker } from 'react-color';
 import ClickedOutside from '@bit/rishiraj824.react-components.clicked-outside';
 import BrushSizeComponent from './components/brush-size';
+import brush from './images/brush.svg';
+import colorPicker from './images/color-picker.svg';
+import background from './images/background.svg';
+import eraser from './images/eraser.svg';
+import colorPalette from './images/paint-palette.svg';
 
-/* 
-function Box(props) {b
-    // This reference will give us direct access to the mesh
-    const mesh = useRef()
-    
-    // Set up state for the hovered and active state
-    const [hovered, setHover] = useState(false)
-    const [active, setActive] = useState(false)
-    
-    // Rotate mesh every frame, this is outside of React without overhead
-    useFrame(() => (mesh.current.rotation.x = mesh.current.rotation.y += 0.01))
-    
-    return (
-        <mesh
-          {...props}
-          ref={mesh}
-          scale={active ? [1.5, 1.5, 1.5] : [1, 1, 1]}
-          onClick={e => setActive(!active)}
-          onPointerOver={e => setHover(true)}
-          onPointerOut={e => setHover(false)}>
-          <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-          <meshStandardMaterial attach="material" color={hovered ? 'hotpink' : 'orange'} />
-        </mesh>
-    )
-  }
- */
 const brushSize = 5;
+
+
 export default class Blackboard extends Component {
 
     constructor(props){
@@ -49,21 +29,156 @@ export default class Blackboard extends Component {
             paletteOptions: [{  
                 name:'bSize',
                 component: () => <BrushSizeComponent onSelection={this.onBrushSizeSelection}/>,
-                icon: './brush.svg' 
+                icon:  brush
             },{
                 name: 'bColor', 
                 component: () => <CirclePicker onChangeComplete={this.handleChangeBrushColorComplete} />,
-                icon: './color-picker.svg'
+                icon: colorPicker
             },{
                 name: 'background', 
                 component: () => <CirclePicker onChangeComplete={this.handleChangeBackgroundComplete} />,
-                icon: './background.svg'
+                icon: background
             },{
                 name: 'eraser',
-                icon: './eraser.svg'
+                icon: eraser
             }]
         }
+        this.pc1 = null;
+        this.pc2 = null;
+        this.offerOptions = {
+            offerToReceiveAudio: 1,
+            offerToReceiveVideo: 1
+        };
+    
+        this.peerConnection = null;
+        this.canvas = null;
+        this.stream = null;
+        this.startTime = 0;
+
+        this.videoRef = React.createRef();
     }
+
+
+gotRemoteStream = (e) => {
+
+    if (this.videoRef.current.srcObject !== e.streams[0]) {
+        console.log(e.streams[0])
+      this.videoRef.current.srcObject = e.streams[0];
+      console.log('pc2 received remote stream');
+    }
+  }
+
+
+
+call = () => {
+  console.log('Starting call');
+  this.startTime = window.performance.now();
+
+  const videoTracks = this.stream.getVideoTracks();
+  const audioTracks = this.stream.getAudioTracks();
+  if (videoTracks.length > 0) {
+    console.log(`Using video device: ${videoTracks[0].label}`);
+  }
+  if (audioTracks.length > 0) {
+    console.log(`Using audio device: ${audioTracks[0].label}`);
+  }
+  const servers = null;
+  this.pc1 = new RTCPeerConnection(servers);
+  console.log('Created local peer connection object pc1');
+  this.pc1.onicecandidate = e => this.onIceCandidate(this.pc1, e);
+  this.pc2 = new RTCPeerConnection(servers);
+  console.log('Created remote peer connection object pc2');
+  this.pc2.onicecandidate = e => this.onIceCandidate(this.pc2, e);
+  this.pc1.oniceconnectionstatechange = e => this.onIceStateChange(this.pc1, e);
+  this.pc2.oniceconnectionstatechange = e => this.onIceStateChange(this.pc2, e);
+  this.pc2.ontrack = this.gotRemoteStream;
+
+  this.stream.getTracks().forEach(
+      track => {
+        this.pc1.addTrack(
+            track,
+            this.stream
+        );
+      }
+    );
+    console.log('Added local stream to pc1');
+
+    console.log('pc1 createOffer start');
+    this.pc1.createOffer(this.onCreateOfferSuccess, this.onCreateSessionDescriptionError, this.offerOptions);
+    }
+
+    onCreateSessionDescriptionError = (error) => {
+    console.log(`Failed to create session description: ${error.toString()}`);
+    }
+
+    onCreateOfferSuccess = (desc) => {
+    console.log(`Offer from pc1\n${desc.sdp}`);
+    console.log('pc1 setLocalDescription start');
+    this.pc1.setLocalDescription(desc, () => this.onSetLocalSuccess(this.pc1), this.onSetSessionDescriptionError);
+    console.log('pc2 setRemoteDescription start');
+    this.pc2.setRemoteDescription(desc, () => this.onSetRemoteSuccess(this.pc2), this.onSetSessionDescriptionError);
+    console.log('pc2 createAnswer start');
+    // Since the 'remote' side has no media stream we need
+    // to pass in the right constraints in order for it to
+    // accept the incoming offer of audio and video.
+    this.pc2.createAnswer(this.onCreateAnswerSuccess, this.onCreateSessionDescriptionError);
+    }
+
+    onSetLocalSuccess = (pc) => {
+        console.log(`${this.getName(pc)} setLocalDescription complete`);
+    }
+  
+    onSetRemoteSuccess = (pc) => {
+        console.log(`${this.getName(pc)} setRemoteDescription complete`);
+    }
+  
+    onSetSessionDescriptionError=(error) =>{
+        console.log(`Failed to set session description: ${error.toString()}`);
+    }
+  
+  
+   onCreateAnswerSuccess = (desc) => {
+    console.log(`Answer from pc2:\n${desc.sdp}`);
+    console.log('pc2 setLocalDescription start');
+    this.pc2.setLocalDescription(desc, () => this.onSetLocalSuccess(this.pc2), this.onSetSessionDescriptionError);
+    console.log('pc1 setRemoteDescription start');
+    this.pc1.setRemoteDescription(desc, () => this.onSetRemoteSuccess(this.pc1), this.onSetSessionDescriptionError);
+  }
+
+  
+  onIceCandidate = (pc, event) => {
+      console.log('this is the event candidate');
+      console.log(event.candidate)
+    this.getOtherPc(pc).addIceCandidate(event.candidate)
+        .then(
+            () => this.onAddIceCandidateSuccess(pc),
+            err => this.onAddIceCandidateError(pc, err)
+        );
+    console.log(`${this.getName(pc)} ICE candidate: ${event.candidate ? event.candidate.candidate : '(null)'}`);
+  }
+  
+  onAddIceCandidateSuccess = (pc) => {
+    console.log(`${this.getName(pc)} addIceCandidate success`);
+  }
+  
+  onAddIceCandidateError = (pc, error) => {
+    console.log(`${this.getName(pc)} failed to add ICE Candidate: ${error.toString()}`);
+  }
+  
+  onIceStateChange = (pc, event) => {
+    if (pc) {
+      console.log(`${this.getName(pc)} ICE state: ${pc.iceConnectionState}`);
+      console.log('ICE state change event: ', event);
+    }
+  }
+  
+  getName = (pc) => {
+    return (pc === this.pc1) ? 'pc1' : 'pc2';
+  }
+  
+  getOtherPc = (pc) => {
+    return (pc === this.pc1) ? this.pc2 : this.pc1;
+  }
 
     onBrushSizeSelection = (size) => {
         this.setState({
@@ -110,7 +225,7 @@ export default class Blackboard extends Component {
                 // and powering sketches using the touches array is recommended for easy
                 // scalability. If you only need to handle the mouse / desktop browsers,
                 // use the 0th touch element and you get wider device support for free.
-                touchmove: function () {
+                touchmove: function() {
     
                     for ( var i = this.touches.length - 1, touch; i >= 0; i-- ) {
     
@@ -129,6 +244,7 @@ export default class Blackboard extends Component {
                 }
             });
     }
+    
     eraser = () => {
         this.onBrushSizeSelection('2x');
         this.handleChangeBrushColorComplete({ hex: this.state.background });
@@ -152,7 +268,7 @@ export default class Blackboard extends Component {
         this.setState({ background: color.hex, selectedOption: '', isPaletteOpen: false });
         // to do: use the sketch library to do this
 
-        document.getElementsByTagName('canvas')[0].style.backgroundColor = color.hex;
+        this.canvas.style.backgroundColor = color.hex;
     };
 
     handleChangeBrushColorComplete = (color, event) => {
@@ -170,21 +286,35 @@ export default class Blackboard extends Component {
     }
     componentDidMount() {
         this.getBlackboard();
-        document.getElementsByTagName('canvas')[0].style.backgroundColor = this.state.background;
+        this.canvas = document.getElementsByTagName('canvas')[0];
+
+        //this.video = document.getElementsByTagName('video')[0];
+
+        /* this.videoRef.addEventListener('loadedmetadata', function() {
+            console.log(`Remote video videoWidth: ${this.videoWidth}px,  videoHeight: ${this.videoHeight}px`);
+        }); */
+  
+
+        this.canvas.style.backgroundColor = this.state.background;
+        this.stream = this.canvas.captureStream();
+        //sendData()
+        console.log('Got stream from canvas');
+        console.log(this.stream)
+        this.call();
     }
 
+
     createSheet =()=> {
-        const canva = document.getElementsByTagName('canvas')[0];
-        const ctx = canva.getContext('2d');
-        this.fillCanvasBackgroundWithColor(canva, this.state.background);
-        const dataURL = canva.toDataURL('image/jpeg', 0.3);
+        const ctx = this.canvas.getContext('2d');
+        this.fillCanvasBackgroundWithColor(this.canvas, this.state.background);
+        const dataURL = this.canvas.toDataURL('image/jpeg', 0.3);
         const sheets = this.state.sheets;
 
         sheets.push(dataURL);
         // to do: figure out a way to clear using the library
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         ctx.fillStyle = "white";
-        canva.style.backgroundColor = '#fff';
+        this.canvas.style.backgroundColor = '#fff';
         this.setState({
             sheets,
             background: '#fff',
@@ -241,18 +371,19 @@ export default class Blackboard extends Component {
         })
         
         const PaletteComponent = () =>  <div className="palette" onClick={this.togglePalette}>  
-            <img src="./paint-palette.svg" onClick={this.openPaletteOptions} className="palette-icon" />
+            <img src={colorPalette} onClick={this.openPaletteOptions} className="palette-icon" />
         </div>
 
         return (<Layout>
            {/*} <Canvas id="blackboard">
             </Canvas>*/}
         <div id="blackboard" className="blackboard"></div>
+
         <div className="right-nav">
             <SheetNav />
             <PaletteComponent />
         </div>
-
+        <video ref={this.videoRef} playsInline autoPlay></video>
         {this.state.isPaletteOpen && <MixedComponent />}
         {this.state.isPreview && <MixedPreviewComponent />}
         </Layout>)
