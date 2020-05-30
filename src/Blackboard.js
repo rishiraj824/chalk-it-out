@@ -1,18 +1,17 @@
-import React, { useRef, useState, Component } from 'react';
-import Layout from './Layout';
-import Sketch from './lib/index';
-import './Blackboard.css';
-import { CirclePicker } from 'react-color';
 import ClickedOutside from '@bit/rishiraj824.react-components.clicked-outside';
+import React, { Component } from 'react';
+import { CirclePicker } from 'react-color';
+import './Blackboard.css';
 import BrushSizeComponent from './components/brush-size';
+import background from './images/background.svg';
 import brush from './images/brush.svg';
 import colorPicker from './images/color-picker.svg';
-import background from './images/background.svg';
 import eraser from './images/eraser.svg';
 import colorPalette from './images/paint-palette.svg';
+import Layout from './Layout';
+import Sketch from './lib/index';
 
 const brushSize = 5;
-
 
 export default class Blackboard extends Component {
 
@@ -41,7 +40,9 @@ export default class Blackboard extends Component {
             },{
                 name: 'eraser',
                 icon: eraser
-            }]
+            }],
+            connected: false,
+            setStreaming: false
         }
         this.pc1 = null;
         this.pc2 = null;
@@ -54,8 +55,9 @@ export default class Blackboard extends Component {
         this.canvas = null;
         this.stream = null;
         this.startTime = 0;
-
+        this.wsRef = React.createRef();
         this.videoRef = React.createRef();
+        this.mediaRecorderRef = React.createRef();
     }
 
 
@@ -64,16 +66,72 @@ gotRemoteStream = (e) => {
     if (this.videoRef.current.srcObject !== e.streams[0]) {
         console.log(e.streams[0])
       this.videoRef.current.srcObject = e.streams[0];
-      console.log('pc2 received remote stream');
+      // stream to mux livestream
+       /*  fetch("https://api.mux.com/video/v1/live-streams", {
+            body: { 
+                    "playback_policy": "public", 
+                    "new_asset_settings": { 
+                        "playback_policy": "public",
+                        "input": e.streams[0]
+                    },
+                    "test": true,
+                },
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: "POST"
+        }).then((res)=>{
+            console.log(res);
+        }); */
     }
   }
 
+stopStreaming = () => { 
+   if(this.mediaRecorderRef.current.state !== 'inactive') {
+      this.mediaRecorderRef.current.stop();
+    }
+  }
 
-
-call = () => {
-  console.log('Starting call');
+record = () => {
+  console.log('Starting record');
   this.startTime = window.performance.now();
+  
+  console.log(this.wsRef)
 
+  this.wsRef.current.addEventListener('open', ()=> {
+    this.setState({
+      connected:true,
+      setStreaming:false
+    })
+
+    const event = {
+      event: "join",
+      groupName: 'class 11d',
+      name: 'rishi',
+    };
+    this.wsRef.current.send(JSON.stringify(event));
+  });
+
+  this.wsRef.current.addEventListener('close', () => {
+    this.setState({
+      connected:false
+    })
+    this.stopStreaming();
+  });
+  this.stream = this.canvas.captureStream(30);
+
+  const outputStream = new MediaStream();
+  console.log(this.stream.getTracks())
+  this.stream.getTracks().forEach(
+    track => {
+      outputStream.addTrack(
+          track,
+          this.stream
+      );
+    }
+  );
+  console.log(this.stream)
+/* 
   const videoTracks = this.stream.getVideoTracks();
   const audioTracks = this.stream.getAudioTracks();
   if (videoTracks.length > 0) {
@@ -82,29 +140,44 @@ call = () => {
   if (audioTracks.length > 0) {
     console.log(`Using audio device: ${audioTracks[0].label}`);
   }
-  const servers = null;
-  this.pc1 = new RTCPeerConnection(servers);
-  console.log('Created local peer connection object pc1');
-  this.pc1.onicecandidate = e => this.onIceCandidate(this.pc1, e);
+ */
+  this.mediaRecorderRef.current = new MediaRecorder(outputStream, {
+    mimeType: 'video/webm',
+    videoBitsPerSecond: 3000000
+  });
+  console.log(this.mediaRecorderRef)
+  this.mediaRecorderRef.current.addEventListener('dataavailable', e => {
+    if(this.state.connected) {
+      console.log(e.data)
+      this.wsRef.current.send(e.data);
+    }
+  });
+
+  this.mediaRecorderRef.current.addEventListener('stop', () => {
+    this.stopStreaming();
+    this.wsRef.current.close();
+  });
+
+  this.mediaRecorderRef.current.start(1000);
+
+  
+
+  //const servers = null;
+  //this.pc1 = new RTCPeerConnection(servers);
+  //console.log('Created local peer connection object pc1');
+  /* this.pc1.onicecandidate = e => this.onIceCandidate(this.pc1, e);
   this.pc2 = new RTCPeerConnection(servers);
   console.log('Created remote peer connection object pc2');
   this.pc2.onicecandidate = e => this.onIceCandidate(this.pc2, e);
   this.pc1.oniceconnectionstatechange = e => this.onIceStateChange(this.pc1, e);
   this.pc2.oniceconnectionstatechange = e => this.onIceStateChange(this.pc2, e);
-  this.pc2.ontrack = this.gotRemoteStream;
+  this.pc2.ontrack = this.gotRemoteStream; */
 
-  this.stream.getTracks().forEach(
-      track => {
-        this.pc1.addTrack(
-            track,
-            this.stream
-        );
-      }
-    );
-    console.log('Added local stream to pc1');
+  
+    // console.log('Added local stream to pc1');
 
-    console.log('pc1 createOffer start');
-    this.pc1.createOffer(this.onCreateOfferSuccess, this.onCreateSessionDescriptionError, this.offerOptions);
+    // console.log('pc1 createOffer start');
+    //this.pc1.createOffer(this.onCreateOfferSuccess, this.onCreateSessionDescriptionError, this.offerOptions);
     }
 
     onCreateSessionDescriptionError = (error) => {
@@ -112,16 +185,16 @@ call = () => {
     }
 
     onCreateOfferSuccess = (desc) => {
-    console.log(`Offer from pc1\n${desc.sdp}`);
-    console.log('pc1 setLocalDescription start');
-    this.pc1.setLocalDescription(desc, () => this.onSetLocalSuccess(this.pc1), this.onSetSessionDescriptionError);
-    console.log('pc2 setRemoteDescription start');
-    this.pc2.setRemoteDescription(desc, () => this.onSetRemoteSuccess(this.pc2), this.onSetSessionDescriptionError);
-    console.log('pc2 createAnswer start');
-    // Since the 'remote' side has no media stream we need
-    // to pass in the right constraints in order for it to
-    // accept the incoming offer of audio and video.
-    this.pc2.createAnswer(this.onCreateAnswerSuccess, this.onCreateSessionDescriptionError);
+      console.log(`Offer from pc1\n${desc.sdp}`);
+      console.log('pc1 setLocalDescription start');
+      this.pc1.setLocalDescription(desc, () => this.onSetLocalSuccess(this.pc1), this.onSetSessionDescriptionError);
+      console.log('pc2 setRemoteDescription start');
+      this.pc2.setRemoteDescription(desc, () => this.onSetRemoteSuccess(this.pc2), this.onSetSessionDescriptionError);
+      console.log('pc2 createAnswer start');
+      // Since the 'remote' side has no media stream we need
+      // to pass in the right constraints in order for it to
+      // accept the incoming offer of audio and video.
+      this.pc2.createAnswer(this.onCreateAnswerSuccess, this.onCreateSessionDescriptionError);
     }
 
     onSetLocalSuccess = (pc) => {
@@ -286,8 +359,14 @@ call = () => {
     }
     componentDidMount() {
         this.getBlackboard();
-        this.canvas = document.getElementsByTagName('canvas')[0];
+        const streamKey = 'ff9059e0-3fd7-951c-4a61-0551ce605b16';
+        const protocol = window.location.protocol.replace('http', 'ws');
+        this.wsRef.current = new WebSocket(
+          `${protocol}//localhost:3000/rtmp?key=${streamKey}`
+        );
 
+        this.canvas = document.getElementsByTagName('canvas')[0];
+    
         //this.video = document.getElementsByTagName('video')[0];
 
         /* this.videoRef.addEventListener('loadedmetadata', function() {
@@ -296,11 +375,10 @@ call = () => {
   
 
         this.canvas.style.backgroundColor = this.state.background;
-        this.stream = this.canvas.captureStream();
+       
         //sendData()
         console.log('Got stream from canvas');
-        console.log(this.stream)
-        this.call();
+        this.record();
     }
 
 
@@ -337,7 +415,6 @@ call = () => {
     render(){
 
         const sheets = this.state.sheets;
-
         const SheetNav = () => <React.Fragment>
                 {sheets.map((sheet,i)=>
                     <div key={`sheet${i}`} className="sheet-nav" onClick={this.showPreview.bind(this, sheet)}><img className="sheet-nav-image" src={sheet} /></div>)
@@ -383,7 +460,7 @@ call = () => {
             <SheetNav />
             <PaletteComponent />
         </div>
-        <video ref={this.videoRef} playsInline autoPlay></video>
+        {/*<video ref={this.videoRef} playsInline autoPlay></video>*/}
         {this.state.isPaletteOpen && <MixedComponent />}
         {this.state.isPreview && <MixedPreviewComponent />}
         </Layout>)

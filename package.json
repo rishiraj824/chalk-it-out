@@ -15,7 +15,8 @@
     "react-scripts": "3.4.1",
     "react-three-fiber": "^4.0.28",
     "three": "^0.115.0",
-    "webrtc-adapter": "^7.5.1"
+    "webrtc-adapter": "^7.5.1",
+    "ws": "^7.3.0"
   },
   "scripts": {
     "start": "react-scripts start",

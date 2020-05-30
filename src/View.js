@@ -9,6 +9,9 @@ class View extends React.Component {
         }
        this.video = document.querySelector('video');
     }
+    componentDidMount() {
+        
+    }
 
 
 

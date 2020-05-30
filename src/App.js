@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import Login from './Login';
 import './App.css';
 import Blackboard from './Blackboard';
+import Login from './Login';
 
 class  App extends Component {
 

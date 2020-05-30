@@ -1,15 +1,10 @@
-import ReactDOM from 'react-dom'
-import React from 'react'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import App from './App';
 import Home from './Home';
-import View from './View';
 import "./index.css";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link
-} from "react-router-dom";
+import View from './View';
 
 
 
@@ -19,10 +14,10 @@ ReactDOM.render(
         <Switch>
           <Route path="/teach/:id">
             <App />
-          </Route>{/* 
+          </Route>
           <Route path="/view/:id">
             <View />
-          </Route> */}
+          </Route> 
           <Route path="/">
             <Home />
           </Route>
