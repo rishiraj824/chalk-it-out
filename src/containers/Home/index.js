@@ -21,7 +21,7 @@ const Home = () => {
     cookies.get('token');
 
     try {
-      const result = await fetch(`${API_URL}/start-teaching`, {
+      const response = await fetch(`${API_URL}/start-teaching`, {
         method: 'post',
         headers: {
           Authorization: `Bearer ${token}`
