@@ -64,25 +64,7 @@ export default class Blackboard extends Component {
 gotRemoteStream = (e) => {
 
     if (this.videoRef.current.srcObject !== e.streams[0]) {
-        console.log(e.streams[0])
       this.videoRef.current.srcObject = e.streams[0];
-      // stream to mux livestream
-       /*  fetch("https://api.mux.com/video/v1/live-streams", {
-            body: { 
-                    "playback_policy": "public", 
-                    "new_asset_settings": { 
-                        "playback_policy": "public",
-                        "input": e.streams[0]
-                    },
-                    "test": true,
-                },
-            headers: {
-                "Content-Type": "application/json"
-            },
-            method: "POST"
-        }).then((res)=>{
-            console.log(res);
-        }); */
     }
   }
 

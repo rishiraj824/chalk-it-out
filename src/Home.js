@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { withRouter } from "react-router";
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import Button from './components/button';
 import Input from './components/input';
 import "./Home.css";
@@ -8,8 +8,7 @@ import Layout from './Layout';
 
 const Home = () => {
     const [state, setState] = useState(null);
-    const router = this.props.history;
-    console.log(this.props)
+    const history = useHistory();
 
     const createLiveStream = async () => {
         try {
@@ -29,7 +28,7 @@ const Home = () => {
             const response = await fetch("https://api.mux.com/video/v1/live-streams", requestOptions);
             const result = await response.text();
             console.log(result.stream_key)
-            router.push(`/teach/${state}-${result.stream_key}?id=${result.id}`)
+            history.push(`/teach/${state}-${result.stream_key}?id=${result.id}`)
 
         } catch(err) {
             console.log(err);
