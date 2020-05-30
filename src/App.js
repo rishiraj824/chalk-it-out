@@ -1,59 +1,74 @@
-import React, { Component } from 'react';
-import './App.css';
-import Blackboard from './Blackboard';
-import Login from './Login';
+import React, { Component } from "react";
+import { withCookies } from "react-cookie";
+import "./App.css";
+import Home from "./Home";
+import Login from "./Login";
 
-class  App extends Component {
-
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       user: {
-        avatar: 'https://i.pravatar.cc/50',
-        name: 'Anonymous'
+        avatar: "https://i.pravatar.cc/50",
+        name: "Anonymous",
       },
-      isSignedIn: false
-    }
+    };
   }
 
   componentDidMount() {
-    const isSignedIn = document.cookie;
-    if(isSignedIn) {
+    const { cookies } = this.props;
+    const isSignedIn = cookies.get("user") || false;
+    if (isSignedIn) {
       this.setState({
-        isSignedIn,
-        user: JSON.parse(localStorage.getItem('user')) || {
-          avatar: 'https://i.pravatar.cc/50',
-          name: 'Anonymous'
-        }
-      })
+        user: JSON.parse(localStorage.getItem("user")),
+      });
     }
   }
   handleLogin = (response) => {
-    localStorage.setItem('user', JSON.stringify({
-      avatar: response.profileObj && response.profileObj.imageUrl,
-      name: response.profileObj && response.profileObj.name
-    }))
-      this.setState({
-        user: {
-          avatar: response.profileObj && response.profileObj.imageUrl,
-          name: response.profileObj && response.profileObj.name
-        },
+    const { cookies } = this.props;
+
+    cookies.set("token", response.accessToken);
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        avatar: response.profileObj && response.profileObj.imageUrl,
+        name: response.profileObj && response.profileObj.name,
       })
-  }
+    );
+
+    this.setState({
+      user: {
+        avatar: response.profileObj && response.profileObj.imageUrl,
+        name: response.profileObj && response.profileObj.name,
+      },
+    });
+  };
 
   handleLogout = () => {
-    localStorage.removeItem('user');
+    const { cookies } = this.props;
+
+    cookies.remove("token");
+    localStorage.removeItem("user");
     window.location.reload();
-  }
+  };
 
   render() {
-    const { user, isSignedIn } = this.state;
+    const { user } = this.state;
+    const { cookies } = this.props;
+
+    const isSignedIn = cookies.get("token") || false;
+
     return (
       <React.Fragment>
-        {isSignedIn?<Blackboard user={user}/>:<Login isSignedIn={isSignedIn} handleLogin={this.handleLogin} />}
+        {isSignedIn ? (
+          <Home />
+        ) : (
+          <Login isSignedIn={isSignedIn} handleLogin={this.handleLogin} />
+        )}
       </React.Fragment>
     );
   }
 }
 
-export default App;
+export default withCookies(App);

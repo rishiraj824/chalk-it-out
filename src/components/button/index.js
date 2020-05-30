@@ -1,9 +1,8 @@
 import React from 'react';
 import './button.css';
 
-const Button = (props) => (<div className="button-container">
-<button {...props}>{props.text}</button>
-
+const Button = ({ disabled, text, ...props }) => (<div className="button-container">
+{disabled ? <button disabled {...props}>{text}</button>: <button {...props}>{text}</button>}
 </div>
 )
 

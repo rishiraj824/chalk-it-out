@@ -1,46 +1,54 @@
-import React, { useState } from 'react';
-import { withRouter } from "react-router";
-import { Link, useHistory } from 'react-router-dom';
-import Button from './components/button';
-import Input from './components/input';
+import React, { useEffect, useRef, useState } from "react";
+import { useHistory } from "react-router-dom";
+import Button from "./components/button";
+import Input from "./components/input";
 import "./Home.css";
-import Layout from './Layout';
+import Layout from "./Layout";
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 const Home = () => {
-    const [state, setState] = useState(null);
-    const history = useHistory();
+  const [lectureName, setState] = useState("");
+  const history = useHistory();
+  let inputRef = useRef(null);
 
-    const createLiveStream = async () => {
-        try {
-            const headers = new Headers();
-            headers.append("Content-Type", "application/json");
-            headers.append("Authorization", `Basic ${process.env.REACT_APP_MUX_TOKEN}`);
+  useEffect(() => {
+    inputRef.current.focus();
+  });
 
-            const raw = JSON.stringify({"playback_policy":"public","new_asset_settings":{"playback_policy":"public"}});
-
-            var requestOptions = {
-                method: 'POST',
-                headers: headers,
-                body: raw,
-                redirect: 'follow'
-            };
-
-            const response = await fetch("https://api.mux.com/video/v1/live-streams", requestOptions);
-            const result = await response.text();
-            console.log(result.stream_key)
-            history.push(`/teach/${state}-${result.stream_key}?id=${result.id}`)
-
-        } catch(err) {
-            console.log(err);
-        }
+  const createLiveStream = async () => {
+    try {
+      const result = await fetch(API_URL, {
+        method: "post",
+        body: JSON.stringify({
+          user: document.cookie.get("oauth"),
+        }),
+      });
+      history.push(
+        `/teach/${lectureName}-${result.stream_key}?id=${result.id}`
+      );
+    } catch (err) {
+      console.log(err);
     }
-    return (<Layout>
-            <div className="welcome">
-                <Input placeholder="What are you teaching?" value={state} onChange={(e)=>setState(e.target.value)}/>
-                <h3>Start Live Teaching</h3>
-                <Link onClick={createLiveStream} ><Button text="Let's Go!" /></Link>
-            </div>
-        </Layout>)
-}
+  };
+  return (
+    <Layout>
+      <div className="welcome">
+        <Input
+          ref={inputRef}
+          placeholder="What are you teaching today?"
+          value={lectureName}
+          onChange={(e) => setState(e.target.value)}
+        />
+        <h3>Start Live Teaching</h3>
+        <Button
+          onClick={createLiveStream}
+          disabled={!lectureName}
+          text="Let's Go!"
+        />
+      </div>
+    </Layout>
+  );
+};
 
-export default withRouter(Home);
+export default Home;

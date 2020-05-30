@@ -1,7 +1,5 @@
 import React from 'react';
 import "./nav.css";
-import GoogleLogout from 'react-google-login';
-import credentials from '../../config/credentials.json';
 
 const Nav = () => { 
     const user = JSON.parse(localStorage.getItem('user')) || {

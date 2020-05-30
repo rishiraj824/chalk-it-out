@@ -1,27 +1,28 @@
 import React from 'react';
+import { CookiesProvider } from 'react-cookie';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import App from './App';
-import Home from './Home';
+import Blackboard from './Blackboard';
 import "./index.css";
 import View from './View';
 
 
-
-ReactDOM.render(
-
-  <Router>
+ReactDOM.render(<CookiesProvider>
+      <Router>
         <Switch>
           <Route path="/teach/:id">
-            <App />
+            <Blackboard />
           </Route>
           <Route path="/view/:id">
             <View />
           </Route> 
           <Route path="/">
-            <Home />
+            <App />
           </Route>
         </Switch>
-        </Router>,
+      </Router>
+    </CookiesProvider>,
     document.getElementById('root')
 )
+
