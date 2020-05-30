@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import Button from './components/button';
-import Input from './components/input';
+import Button from '../../components/button';
+import Input from '../../components/input';
+import Layout from '../Layout';
 import './Home.css';
-import Layout from './Layout';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -17,13 +17,21 @@ const Home = () => {
   });
 
   const createLiveStream = async () => {
+    const { cookies } = this.props;
+    cookies.get('token');
+
     try {
-      const result = await fetch(API_URL, {
+      const result = await fetch(`${API_URL}/start-teaching`, {
         method: 'post',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
         body: JSON.stringify({
-          user: document.cookie.get('oauth'),
+          user: cookies.get('user'),
         }),
       });
+      const result = response.json();
+      console.log(result)
       history.push(
         `/teach/${lectureName}-${result.stream_key}?id=${result.id}`,
       );

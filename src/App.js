@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { withCookies } from "react-cookie";
 import "./App.css";
-import Home from "./Home";
-import Login from "./Login";
+import Home from "./containers/Home";
+import Login from "./containers/Login";
 
 class App extends Component {
   constructor(props) {

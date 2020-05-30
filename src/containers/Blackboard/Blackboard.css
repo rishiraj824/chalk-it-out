@@ -5,11 +5,12 @@ video {
     margin: 1em;
     object-fit: cover;
     z-index: 10;
-    box-shadow: 0px 0px 3px 1px rgba(0,0,0,0.2);
+    box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.2);
     position: absolute;
     left: 0;
     bottom: 5%;
 }
+
 .right-nav {
     position: absolute;
     right: 0;
@@ -26,7 +27,8 @@ video {
     justify-content: flex-end;
 }
 
-.palette, .sheet-nav {
+.palette,
+.sheet-nav {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -38,9 +40,11 @@ video {
     position: relative;
     overflow: hidden;
 }
+
 .palette {
     margin-bottom: 2.4rem;
 }
+
 .overlay {
     z-index: 0;
     background: rgba(0, 0, 0, 0.4);
@@ -52,6 +56,7 @@ video {
     width: 100%;
     height: 100vh;
 }
+
 .preview {
     display: flex;
     align-items: center;
@@ -98,6 +103,7 @@ video {
     font-size: 1.4rem;
     font-weight: 600;
 }
+
 .palette-options {
     position: absolute;
     right: 60px;
@@ -117,15 +123,17 @@ video {
     cursor: pointer;
 
 }
+
 .option-container {
     position: absolute;
     bottom: 130%;
     right: -5%;
     background: #fff;
-    box-shadow: 0px 0px 5px 1px rgba(0,0,0,0.1);
+    box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.1);
     padding: 0.4rem;
 }
-.option-container::after{
+
+.option-container::after {
     border-top: 8px solid #fff;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
@@ -135,6 +143,7 @@ video {
     right: 50%;
     top: 100%;
 }
+
 .option-container::before {
     content: '';
     right: 50%;
@@ -147,7 +156,8 @@ video {
     height: 16px;
     bottom: -5%;
 }
-.palette-option-image:hover{ 
+
+.palette-option-image:hover {
     transform: scale(1.1);
     transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }

@@ -2,35 +2,34 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-family: "San Francisco";
+  font-family: 'San Francisco';
   font-weight: 400;
 }
 
-
 /** Light */
 @font-face {
-  font-family: "San Francisco";
+  font-family: 'San Francisco';
   font-weight: 200;
   src: url('./fonts/SF-Pro-Display-Light.otf');
 }
 
 /** Medium */
 @font-face {
-  font-family: "San Francisco";
+  font-family: 'San Francisco';
   font-weight: 500;
   src: url('./fonts/SF-Pro-Display-Medium.otf');
 }
 
 /** Semi Bold */
 @font-face {
-  font-family: "San Francisco";
+  font-family: 'San Francisco';
   font-weight: 400;
   src: url('./fonts/SF-Pro-Display-Semibold.otf');
 }
 
 /** Bold */
 @font-face {
-  font-family: "San Francisco";
+  font-family: 'San Francisco';
   font-weight: 700;
   src: url('./fonts/SF-Pro-Display-Semibold.otf');
 }

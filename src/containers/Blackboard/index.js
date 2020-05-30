@@ -1,15 +1,15 @@
 import ClickedOutside from "@bit/rishiraj824.react-components.clicked-outside";
 import React, { Component } from "react";
 import { CirclePicker } from "react-color";
+import BrushSizeComponent from "../../components/brush-size";
+import background from "../../images/background.svg";
+import brush from "../../images/brush.svg";
+import colorPicker from "../../images/color-picker.svg";
+import eraser from "../../images/eraser.svg";
+import colorPalette from "../../images/paint-palette.svg";
+import Sketch from "../../lib/index";
+import Layout from "../Layout";
 import "./Blackboard.css";
-import BrushSizeComponent from "./components/brush-size";
-import background from "./images/background.svg";
-import brush from "./images/brush.svg";
-import colorPicker from "./images/color-picker.svg";
-import eraser from "./images/eraser.svg";
-import colorPalette from "./images/paint-palette.svg";
-import Layout from "./Layout";
-import Sketch from "./lib/index";
 
 const brushSize = 5;
 
