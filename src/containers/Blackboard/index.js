@@ -1,6 +1,8 @@
 import ClickedOutside from "@bit/rishiraj824.react-components.clicked-outside";
+import { isUndefined } from 'litedash';
 import React, { Component } from "react";
 import { CirclePicker } from "react-color";
+import { withRouter } from "react-router-dom";
 import BrushSizeComponent from "../../components/brush-size";
 import background from "../../images/background.svg";
 import brush from "../../images/brush.svg";
@@ -13,7 +15,7 @@ import "./Blackboard.css";
 
 const brushSize = 5;
 
-export default class Blackboard extends Component {
+class Blackboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -90,7 +92,12 @@ export default class Blackboard extends Component {
     console.log("Starting record");
     this.startTime = window.performance.now();
 
-    console.log(this.wsRef);
+    console.log(this.props);
+
+    const { match } = this.props;
+    const lectureName = match.params.lectureName;
+
+    const user = JSON.parse(localStorage.getItem('user'));
 
     this.wsRef.current.addEventListener("open", () => {
       this.setState({
@@ -100,8 +107,8 @@ export default class Blackboard extends Component {
 
       const event = {
         event: "join",
-        groupName: "class 11d",
-        name: "rishi",
+        groupName: lectureName,
+        name: user.name
       };
       this.wsRef.current.send(JSON.stringify(event));
     });
@@ -391,10 +398,18 @@ export default class Blackboard extends Component {
   };
   componentDidMount() {
     this.getBlackboard();
-    const streamKey = "ff9059e0-3fd7-951c-4a61-0551ce605b16";
+    const { match, location, history } = this.props;
+    console.log(match)
+    console.log(location)
+    const streamKey = match.params.key;
+    const streamId = match.params.id;
+    
+    console.log(streamKey);
+    console.log(streamId)
+    
     const protocol = window.location.protocol.replace("http", "ws");
     this.wsRef.current = new WebSocket(
-      `${protocol}//localhost:3000/rtmp?key=${streamKey}`
+      `${protocol}//localhost:3002/rtmp?key=${streamKey}&id=${streamId}`
     );
 
     this.canvas = document.getElementsByTagName("canvas")[0];
@@ -407,7 +422,6 @@ export default class Blackboard extends Component {
 
     this.canvas.style.backgroundColor = this.state.background;
 
-    //sendData()
     console.log("Got stream from canvas");
     this.record();
   }
@@ -444,6 +458,10 @@ export default class Blackboard extends Component {
 
   render() {
     const sheets = this.state.sheets;
+
+    const { match } = this.props;
+    const lectureName = match.params.lectureName;
+
     const SheetNav = () => (
       <React.Fragment>
         {sheets.map((sheet, i) => (
@@ -500,20 +518,37 @@ export default class Blackboard extends Component {
       </div>
     );
 
-    return (
-      <Layout>
-        {/*} <Canvas id="blackboard">
-            </Canvas>*/}
-        <div id="blackboard" className="blackboard"></div>
-
-        <div className="right-nav">
-          <SheetNav />
-          <PaletteComponent />
-        </div>
-        {/*<video ref={this.videoRef} playsInline autoPlay></video>*/}
-        {this.state.isPaletteOpen && <MixedComponent />}
-        {this.state.isPreview && <MixedPreviewComponent />}
-      </Layout>
-    );
+    console.log(match);
+    const streamKey = match.params.key;
+    const streamId = match.params.id;
+  
+    if(!isUndefined(streamKey) && !isUndefined(streamId)) {
+      return (
+        <Layout>
+          {/*} <Canvas id="blackboard">
+              </Canvas>*/}
+          <div id="blackboard" className="blackboard"></div>
+          <span></span>
+          <div className="right-nav">
+            <SheetNav />
+            <PaletteComponent />
+          </div>
+          {/*<video ref={this.videoRef} playsInline autoPlay></video>*/}
+          {this.state.isPaletteOpen && <MixedComponent />}
+          {this.state.isPreview && <MixedPreviewComponent />}
+        </Layout>
+      );
+    }
+    else {
+      return (
+        <Layout>
+            <h3>Please check the URL and try again.</h3>
+        </Layout>
+      );
+    }
+    
   }
 }
+
+
+export default withRouter(Blackboard);

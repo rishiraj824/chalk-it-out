@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router-dom';
 import Button from '../../components/button';
 import Input from '../../components/input';
@@ -12,29 +13,29 @@ const Home = () => {
   const history = useHistory();
   let inputRef = useRef(null);
 
+  const [cookies] = useCookies(['token']);
+
+  const token = cookies.token;
+  const user = JSON.parse(localStorage.getItem('user'));
   useEffect(() => {
     inputRef.current.focus();
   });
 
   const createLiveStream = async () => {
-    const { cookies } = this.props;
-    cookies.get('token');
-
     try {
-      const response = await fetch(`${API_URL}/start-teaching`, {
+      const response = await fetch(`${API_URL}/live-stream`, {
         method: 'post',
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
         body: JSON.stringify({
-          user: cookies.get('user'),
+          user,
         }),
       });
-      const result = response.json();
-      console.log(result)
-      history.push(
-        `/teach/${lectureName}-${result.stream_key}?id=${result.id}`,
-      );
+      const result = await response.json();
+      
+      if (typeof result.data.stream_key !== 'undefined') {
+        history.push(
+          `/teach/${lectureName}/${result.data.stream_key}/${result.data.id}?playback_id=${result.data.playback_ids[0].id}`,
+        );
+      }
     } catch (err) {
       console.log(err);
     }

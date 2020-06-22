@@ -11,7 +11,7 @@ ReactDOM.render(
   <CookiesProvider>
     <Router>
       <Switch>
-        <Route path="/teach/:id">
+        <Route path="/teach/:lectureName/:key/:id" exact>
           <Blackboard />
         </Route>
         <Route path="/view/:id">

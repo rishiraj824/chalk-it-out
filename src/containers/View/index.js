@@ -1,25 +1,33 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
+import { Player } from 'video-react';
+import HLSSource from '../../components/hls';
+import Layout from '../Layout';
 
-class View extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.video = document.querySelector('video');
-  }
-  componentDidMount() {}
+const MUX_STREAM = process.env.REACT_APP_MUX_STREAM;
 
-  /* const canvas = document.querySelector('canvas');
-    const video = document.querySelector('video');
+const View = () => {
+  const params = useParams();
+  const { id } = params;
 
-    const stream = canvas.captureStream();
-    video.srcObject = stream; */
-  render() {
+  if (id) {
     return (
-      <div>
-        <video playsinline autoplay></video>
-      </div>
+      <Layout>
+        <Player>
+          <HLSSource isVideoChild src={`${MUX_STREAM}/${id}.m3u8`} />
+        </Player>
+      </Layout>
     );
   }
-}
+
+  return (
+    <Layout>
+      <h3>
+        {' '}
+        The Stream URL seems to be corrupted, please check again.{' '}
+      </h3>
+    </Layout>
+  );
+};
 
 export default View;
