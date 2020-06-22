@@ -5,29 +5,24 @@ Credits - https://github.com/soulwire/sketch.js/
 */
 
 (function (root, factory) {
-
   if (typeof exports === 'object') {
-
     // CommonJS like
     module.exports = factory(root, root.document);
-
-  }
+  } else {
   /* else if ( typeof define === 'function' && define.amd ) {
    
        // AMD
        define( function() { return factory( root, root.document ); });
    
      } */
-  else {
-
     // Browser global
     root.Sketch = factory(root, root.document);
   }
-
-}(typeof window !== "undefined" ? window : this, function (window, document) {
-
-
-  "use strict";
+})(typeof window !== 'undefined' ? window : this, function (
+  window,
+  document,
+) {
+  'use strict';
 
   /*
     ----------------------------------------------------------------------
@@ -37,7 +32,9 @@ Credits - https://github.com/soulwire/sketch.js/
     ----------------------------------------------------------------------
     */
 
-  var MATH_PROPS = 'E LN10 LN2 LOG2E LOG10E PI SQRT1_2 SQRT2 abs acos asin atan ceil cos exp floor log round sin sqrt tan atan2 pow max min'.split(' ');
+  var MATH_PROPS = 'E LN10 LN2 LOG2E LOG10E PI SQRT1_2 SQRT2 abs acos asin atan ceil cos exp floor log round sin sqrt tan atan2 pow max min'.split(
+    ' ',
+  );
   var HAS_SKETCH = '__hasSketch';
   var M = Math;
 
@@ -51,7 +48,6 @@ Credits - https://github.com/soulwire/sketch.js/
   var instances = [];
 
   var defaults = {
-
     fullscreen: true,
     autostart: true,
     autoclear: true,
@@ -60,11 +56,10 @@ Credits - https://github.com/soulwire/sketch.js/
     interval: 1,
     globals: true,
     retina: false,
-    type: CANVAS
+    type: CANVAS,
   };
 
   var keyMap = {
-
     8: 'BACKSPACE',
     9: 'TAB',
     13: 'ENTER',
@@ -74,7 +69,7 @@ Credits - https://github.com/soulwire/sketch.js/
     37: 'LEFT',
     38: 'UP',
     39: 'RIGHT',
-    40: 'DOWN'
+    40: 'DOWN',
   };
 
   /*
@@ -86,65 +81,48 @@ Credits - https://github.com/soulwire/sketch.js/
     */
 
   function isArray(object) {
-
     return Object.prototype.toString.call(object) == '[object Array]';
   }
 
   function isFunction(object) {
-
     return typeof object == 'function';
   }
 
   function isNumber(object) {
-
     return typeof object == 'number';
   }
 
   function isString(object) {
-
     return typeof object == 'string';
   }
 
   function keyName(code) {
-
     return keyMap[code] || String.fromCharCode(code);
   }
 
   function extend(target, source, overwrite) {
-
     for (var key in source)
-
-      if (overwrite || !(key in target))
-
-        target[key] = source[key];
+      if (overwrite || !(key in target)) target[key] = source[key];
 
     return target;
   }
 
   function proxy(method, context) {
-
     return function () {
-
       method.apply(context, arguments);
     };
   }
 
   function clone(target) {
-
     var object = {};
 
     for (var key in target) {
-
       if (key === 'webkitMovementX' || key === 'webkitMovementY')
         continue;
 
       if (isFunction(target[key]))
-
         object[key] = proxy(target[key], target);
-
-      else
-
-        object[key] = target[key];
+      else object[key] = target[key];
     }
 
     return object;
@@ -159,8 +137,23 @@ Credits - https://github.com/soulwire/sketch.js/
     */
 
   function constructor(context) {
-
-    var request, handler, target, parent, bounds, index, suffix, clock, node, copy, type, key, val, min, max, w, h;
+    var request,
+      handler,
+      target,
+      parent,
+      bounds,
+      index,
+      suffix,
+      clock,
+      node,
+      copy,
+      type,
+      key,
+      val,
+      min,
+      max,
+      w,
+      h;
 
     var counter = 0;
     var touches = [];
@@ -176,65 +169,72 @@ Credits - https://github.com/soulwire/sketch.js/
       ox: 0.0,
       oy: 0.0,
       dx: 0.0,
-      dy: 0.0
+      dy: 0.0,
     };
 
     var eventMap = [
-
       context.eventTarget || context.element,
 
-      pointer, 'mousedown', 'touchstart',
-      pointer, 'mousemove', 'touchmove',
-      pointer, 'mouseup', 'touchend',
-      pointer, 'click',
-      pointer, 'mouseout',
-      pointer, 'mouseover',
+      pointer,
+      'mousedown',
+      'touchstart',
+      pointer,
+      'mousemove',
+      'touchmove',
+      pointer,
+      'mouseup',
+      'touchend',
+      pointer,
+      'click',
+      pointer,
+      'mouseout',
+      pointer,
+      'mouseover',
 
       doc,
 
-      keypress, 'keydown', 'keyup',
+      keypress,
+      'keydown',
+      'keyup',
 
       win,
 
-      active, 'focus', 'blur',
-      resize, 'resize'
+      active,
+      'focus',
+      'blur',
+      resize,
+      'resize',
     ];
 
     var keys = {};
     for (key in keyMap) keys[keyMap[key]] = false;
 
     function trigger(method) {
-
       if (isFunction(method))
-
         method.apply(context, [].splice.call(arguments, 1));
     }
 
     function bind(on) {
-
       for (index = 0; index < eventMap.length; index++) {
-
         node = eventMap[index];
 
         if (isString(node))
-
-          target[(on ? 'add' : 'remove') + 'EventListener'].call(target, node, handler, false);
-
-        else if (isFunction(node))
-
-          handler = node;
-
+          target[(on ? 'add' : 'remove') + 'EventListener'].call(
+            target,
+            node,
+            handler,
+            false,
+          );
+        else if (isFunction(node)) handler = node;
         else target = node;
       }
     }
 
     function update() {
-
       cAF(request);
       request = rAF(update);
 
       if (!setup) {
-
         trigger(context.setup);
         setup = isFunction(context.setup);
       }
@@ -245,7 +245,6 @@ Credits - https://github.com/soulwire/sketch.js/
       }
 
       if (context.running && !counter) {
-
         context.dt = (clock = +new Date()) - context.now;
         context.millis += context.dt;
         context.now = clock;
@@ -255,9 +254,7 @@ Credits - https://github.com/soulwire/sketch.js/
         // Pre draw
 
         if (is2D) {
-
           if (context.retina) {
-
             context.save();
 
             if (context.autoclear) {
@@ -265,9 +262,7 @@ Credits - https://github.com/soulwire/sketch.js/
             }
           }
 
-          if (context.autoclear)
-
-            context.clear();
+          if (context.autoclear) context.clear();
         }
 
         // Draw
@@ -276,16 +271,13 @@ Credits - https://github.com/soulwire/sketch.js/
 
         // Post draw
 
-        if (is2D && context.retina)
-
-          context.restore();
+        if (is2D && context.retina) context.restore();
       }
 
       counter = ++counter % context.interval;
     }
 
     function resize() {
-
       target = isDiv ? context.style : context.canvas;
       suffix = isDiv ? 'px' : '';
 
@@ -293,13 +285,11 @@ Credits - https://github.com/soulwire/sketch.js/
       h = context.height;
 
       if (context.fullscreen) {
-
         h = context.height = win.innerHeight;
         w = context.width = win.innerWidth;
       }
 
       if (context.retina && is2D && ratio) {
-
         target.style.height = h + 'px';
         target.style.width = w + 'px';
 
@@ -307,33 +297,28 @@ Credits - https://github.com/soulwire/sketch.js/
         h *= ratio;
       }
 
-      if (target.height !== h)
+      if (target.height !== h) target.height = h + suffix;
 
-        target.height = h + suffix;
-
-      if (target.width !== w)
-
-        target.width = w + suffix;
+      if (target.width !== w) target.width = w + suffix;
 
       if (is2D && !context.autoclear && context.retina)
-
         context.scale(ratio, ratio);
 
       if (setup) trigger(context.resize);
     }
 
     function align(touch, target) {
-
       bounds = target.getBoundingClientRect();
 
-      touch.x = touch.pageX - bounds.left - (win.scrollX || win.pageXOffset);
-      touch.y = touch.pageY - bounds.top - (win.scrollY || win.pageYOffset);
+      touch.x =
+        touch.pageX - bounds.left - (win.scrollX || win.pageXOffset);
+      touch.y =
+        touch.pageY - bounds.top - (win.scrollY || win.pageYOffset);
 
       return touch;
     }
 
     function augment(touch, target) {
-
       align(touch, context.element);
 
       target = target || {};
@@ -351,22 +336,20 @@ Credits - https://github.com/soulwire/sketch.js/
     }
 
     function process(event) {
-
       event.preventDefault();
 
       copy = clone(event);
       copy.originalEvent = event;
 
       if (copy.touches) {
-
         touches.length = copy.touches.length;
 
         for (index = 0; index < copy.touches.length; index++)
-
-          touches[index] = augment(copy.touches[index], touches[index]);
-
+          touches[index] = augment(
+            copy.touches[index],
+            touches[index],
+          );
       } else {
-
         touches.length = 0;
         touches[0] = augment(copy, mouse);
       }
@@ -377,34 +360,25 @@ Credits - https://github.com/soulwire/sketch.js/
     }
 
     function pointer(event) {
-
       event = process(event);
 
-      min = (max = eventMap.indexOf(type = event.type)) - 1;
+      min = (max = eventMap.indexOf((type = event.type))) - 1;
 
-      context.dragging =
-
-        /down|start/.test(type) ? true :
-
-        /up|end/.test(type) ? false :
-
-        context.dragging;
+      context.dragging = /down|start/.test(type)
+        ? true
+        : /up|end/.test(type)
+        ? false
+        : context.dragging;
 
       while (min)
-
-        isString(eventMap[min]) ?
-
-        trigger(context[eventMap[min--]], event) :
-
-        isString(eventMap[max]) ?
-
-        trigger(context[eventMap[max++]], event) :
-
-        min = 0;
+        isString(eventMap[min])
+          ? trigger(context[eventMap[min--]], event)
+          : isString(eventMap[max])
+          ? trigger(context[eventMap[max++]], event)
+          : (min = 0);
     }
 
     function keypress(event) {
-
       key = event.keyCode;
       val = event.type == 'keyup';
       keys[key] = keys[keyName(key)] = !val;
@@ -413,10 +387,7 @@ Credits - https://github.com/soulwire/sketch.js/
     }
 
     function active(event) {
-
-      if (context.autopause)
-
-        (event.type == 'blur' ? stop : start)();
+      if (context.autopause) (event.type == 'blur' ? stop : start)();
 
       trigger(context[event.type], event);
     }
@@ -424,30 +395,29 @@ Credits - https://github.com/soulwire/sketch.js/
     // Public API
 
     function start() {
-
       context.now = +new Date();
       context.running = true;
     }
 
     function stop() {
-
       context.running = false;
     }
 
     function toggle() {
-
       (context.running ? stop : start)();
     }
 
     function clear() {
-
       if (is2D)
-
-        context.clearRect(0, 0, context.width * ratio, context.height * ratio);
+        context.clearRect(
+          0,
+          0,
+          context.width * ratio,
+          context.height * ratio,
+        );
     }
 
     function destroy() {
-
       parent = context.element.parentNode;
       index = instances.indexOf(context);
 
@@ -459,7 +429,6 @@ Credits - https://github.com/soulwire/sketch.js/
     }
 
     extend(context, {
-
       touches: touches,
       mouse: mouse,
       keys: keys,
@@ -474,12 +443,18 @@ Credits - https://github.com/soulwire/sketch.js/
       toggle: toggle,
       clear: clear,
       start: start,
-      stop: stop
+      stop: stop,
     });
 
     instances.push(context);
 
-    return (context.autostart && start(), bind(true), resize(), update(), context);
+    return (
+      context.autostart && start(),
+      bind(true),
+      resize(),
+      update(),
+      context
+    );
   }
 
   /*
@@ -490,107 +465,98 @@ Credits - https://github.com/soulwire/sketch.js/
     ----------------------------------------------------------------------
     */
 
-  var element, context, Sketch = {
+  var element,
+    context,
+    Sketch = {
+      CANVAS: CANVAS,
+      WEB_GL: WEBGL,
+      WEBGL: WEBGL,
+      DOM: DOM,
 
-    CANVAS: CANVAS,
-    WEB_GL: WEBGL,
-    WEBGL: WEBGL,
-    DOM: DOM,
+      instances: instances,
 
-    instances: instances,
+      install: function (context) {
+        if (!context[HAS_SKETCH]) {
+          for (var i = 0; i < MATH_PROPS.length; i++)
+            context[MATH_PROPS[i]] = M[MATH_PROPS[i]];
 
-    install: function (context) {
+          extend(context, {
+            TWO_PI: M.PI * 2,
+            HALF_PI: M.PI / 2,
+            QUARTER_PI: M.PI / 4,
 
-      if (!context[HAS_SKETCH]) {
+            random: function (min, max) {
+              if (isArray(min))
+                return min[~~(M.random() * min.length)];
 
-        for (var i = 0; i < MATH_PROPS.length; i++)
+              if (!isNumber(max)) max = min || 1;
+              min = 0;
 
-          context[MATH_PROPS[i]] = M[MATH_PROPS[i]];
+              return min + M.random() * (max - min);
+            },
 
-        extend(context, {
+            lerp: function (min, max, amount) {
+              return min + amount * (max - min);
+            },
 
-          TWO_PI: M.PI * 2,
-          HALF_PI: M.PI / 2,
-          QUARTER_PI: M.PI / 4,
+            map: function (num, minA, maxA, minB, maxB) {
+              return (
+                ((num - minA) / (maxA - minA)) * (maxB - minB) + minB
+              );
+            },
+          });
 
-          random: function (min, max) {
-
-            if (isArray(min))
-
-              return min[~~(M.random() * min.length)];
-
-            if (!isNumber(max))
-
-              max = min || 1;
-            min = 0;
-
-            return min + M.random() * (max - min);
-          },
-
-          lerp: function (min, max, amount) {
-
-            return min + amount * (max - min);
-          },
-
-          map: function (num, minA, maxA, minB, maxB) {
-
-            return (num - minA) / (maxA - minA) * (maxB - minB) + minB;
-          }
-        });
-
-        context[HAS_SKETCH] = true;
-      }
-    },
-
-    create: function (options) {
-
-      options = extend(options || {}, defaults);
-
-      if (options.globals) Sketch.install(this);
-
-      element = options.element = options.element || doc.createElement(options.type === DOM ? 'div' : 'canvas');
-
-      context = options.context = options.context || (function () {
-
-        switch (options.type) {
-
-          case CANVAS:
-
-            return element.getContext('2d', options);
-
-          case WEBGL:
-
-            return element.getContext('webgl', options) || element.getContext('experimental-webgl', options);
-
-          case DOM:
-
-            return element.canvas = element;
+          context[HAS_SKETCH] = true;
         }
+      },
 
-      })();
+      create: function (options) {
+        options = extend(options || {}, defaults);
 
-      // add background
-      (options.container || doc.body).style.background = options.background || '#ffffff';
+        if (options.globals) Sketch.install(this);
 
-      (options.container || doc.body).appendChild(element);
+        element = options.element =
+          options.element ||
+          doc.createElement(options.type === DOM ? 'div' : 'canvas');
 
+        context = options.context =
+          options.context ||
+          (function () {
+            switch (options.type) {
+              case CANVAS:
+                return element.getContext('2d', options);
 
+              case WEBGL:
+                return (
+                  element.getContext('webgl', options) ||
+                  element.getContext('experimental-webgl', options)
+                );
 
-      return Sketch.augment(context, options);
-    },
+              case DOM:
+                return (element.canvas = element);
+            }
+          })();
 
-    augment: function (context, options) {
+        // add background
+        (options.container || doc.body).style.background =
+          options.background || '#ffffff';
 
-      options = extend(options || {}, defaults);
+        (options.container || doc.body).appendChild(element);
 
-      options.element = context.canvas || context;
-      options.element.className += ' sketch';
+        return Sketch.augment(context, options);
+      },
 
-      extend(context, options, true);
+      augment: function (context, options) {
+        options = extend(options || {}, defaults);
 
-      return constructor(context);
-    }
-  };
+        options.element = context.canvas || context;
+        options.element.className += ' sketch';
+
+        extend(context, options, true);
+
+        return constructor(context);
+      },
+    };
 
   /*
     ----------------------------------------------------------------------
@@ -612,26 +578,28 @@ Credits - https://github.com/soulwire/sketch.js/
   var cAF = scope[c];
 
   for (var i = 0; i < vendors.length && !rAF; i++) {
-
     rAF = scope[vendors[i] + 'Request' + a];
     cAF = scope[vendors[i] + 'Cancel' + a];
   }
 
-  scope[b] = rAF = rAF || function (callback) {
+  scope[b] = rAF =
+    rAF ||
+    function (callback) {
+      var now = +new Date();
+      var dt = M.max(0, 16 - (now - then));
+      var id = setTimeout(function () {
+        callback(now + dt);
+      }, dt);
 
-    var now = +new Date();
-    var dt = M.max(0, 16 - (now - then));
-    var id = setTimeout(function () {
-      callback(now + dt);
-    }, dt);
+      then = now + dt;
+      return id;
+    };
 
-    then = now + dt;
-    return id;
-  };
-
-  scope[c] = cAF = cAF || function (id) {
-    clearTimeout(id);
-  };
+  scope[c] = cAF =
+    cAF ||
+    function (id) {
+      clearTimeout(id);
+    };
 
   /*
     ----------------------------------------------------------------------
@@ -642,5 +610,4 @@ Credits - https://github.com/soulwire/sketch.js/
     */
 
   return Sketch;
-
-}));
+});

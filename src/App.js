@@ -1,40 +1,40 @@
-import React, { Component } from "react";
-import { withCookies } from "react-cookie";
-import "./App.css";
-import Home from "./containers/Home";
-import Login from "./containers/Login";
+import React, { Component } from 'react';
+import { withCookies } from 'react-cookie';
+import './App.css';
+import Home from './containers/Home';
+import Login from './containers/Login';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       user: {
-        avatar: "https://i.pravatar.cc/50",
-        name: "Anonymous",
+        avatar: 'https://i.pravatar.cc/50',
+        name: 'Anonymous',
       },
     };
   }
 
   componentDidMount() {
     const { cookies } = this.props;
-    const isSignedIn = cookies.get("user") || false;
+    const isSignedIn = cookies.get('user') || false;
     if (isSignedIn) {
       this.setState({
-        user: JSON.parse(localStorage.getItem("user")),
+        user: JSON.parse(localStorage.getItem('user')),
       });
     }
   }
   handleLogin = (response) => {
     const { cookies } = this.props;
 
-    cookies.set("token", response.accessToken);
+    cookies.set('token', response.accessToken);
 
     localStorage.setItem(
-      "user",
+      'user',
       JSON.stringify({
         avatar: response.profileObj && response.profileObj.imageUrl,
         name: response.profileObj && response.profileObj.name,
-      })
+      }),
     );
 
     this.setState({
@@ -48,8 +48,8 @@ class App extends Component {
   handleLogout = () => {
     const { cookies } = this.props;
 
-    cookies.remove("token");
-    localStorage.removeItem("user");
+    cookies.remove('token');
+    localStorage.removeItem('user');
     window.location.reload();
   };
 
@@ -57,14 +57,17 @@ class App extends Component {
     const { user } = this.state;
     const { cookies } = this.props;
 
-    const isSignedIn = cookies.get("token") || false;
+    const isSignedIn = cookies.get('token') || false;
 
     return (
       <React.Fragment>
         {isSignedIn ? (
           <Home />
         ) : (
-          <Login isSignedIn={isSignedIn} handleLogin={this.handleLogin} />
+          <Login
+            isSignedIn={isSignedIn}
+            handleLogin={this.handleLogin}
+          />
         )}
       </React.Fragment>
     );

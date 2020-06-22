@@ -1,6 +1,8 @@
 ## chalk-it-out
 
-Head over to [https://github.com/rishiraj824/chalk-it-out/wiki](https://github.com/rishiraj824/chalk-it-out/wiki) to brainstorm and contribute.
+### About the client
+
+Head over to [https://github.com/rishiraj824/chalk-it-out/wiki](https://github.com/rishiraj824/chalk-it-out/wiki) for more.
 
 ### `yarn start`
 

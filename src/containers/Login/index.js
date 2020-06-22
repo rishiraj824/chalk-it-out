@@ -1,6 +1,6 @@
 import React from 'react';
 import { GoogleLogin } from 'react-google-login';
-import credentials from '../../config/credentials.json';
+import credentials from '../../config/credentials';
 import logo from '../../logo.svg';
 
 const Login = ({ handleLogin }) => {
