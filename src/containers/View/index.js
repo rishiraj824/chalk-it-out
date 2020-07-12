@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Player } from 'video-react';
+import '../../../node_modules/video-react/dist/video-react.css';
 import HLSSource from '../../components/hls';
 import Layout from '../Layout';
 
@@ -13,9 +14,14 @@ const View = () => {
   if (id) {
     return (
       <Layout>
-        <Player>
-          <HLSSource isVideoChild src={`${MUX_STREAM}/${id}.m3u8`} />
-        </Player>
+        <div className="video-container">
+          <Player>
+            <HLSSource
+              isVideoChild
+              src={`${MUX_STREAM}/${id}.m3u8`}
+            />
+          </Player>
+        </div>
       </Layout>
     );
   }

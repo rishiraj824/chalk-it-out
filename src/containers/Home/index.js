@@ -47,6 +47,9 @@ const Home = () => {
         <Input
           ref={inputRef}
           placeholder="What are you teaching today?"
+          onKeyPress={(e)=> { if(e.keyCode === 13 || e.which === 13){ 
+            createLiveStream()
+          }}}
           value={lectureName}
           onChange={(e) => setState(e.target.value)}
         />

@@ -62,13 +62,7 @@ class Blackboard extends Component {
       connected: false,
       setStreaming: false,
     };
-    this.pc1 = null;
-    this.pc2 = null;
-    this.offerOptions = {
-      offerToReceiveAudio: 1,
-      offerToReceiveVideo: 1,
-    };
-
+   
     this.peerConnection = null;
     this.canvas = null;
     this.stream = null;
