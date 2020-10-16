@@ -4,6 +4,10 @@
 
 Head over to [https://github.com/rishiraj824/chalk-it-out/wiki](https://github.com/rishiraj824/chalk-it-out/wiki) for more.
 
+### Server
+
+Server - [https://github.com/rishiraj824/chalk-it-out-deno-server](https://github.com/rishiraj824/chalk-it-out-deno-server)
+
 ### `yarn start`
 
 Runs the app in the development mode.<br />
